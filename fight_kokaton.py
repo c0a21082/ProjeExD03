@@ -1,6 +1,7 @@
 import random
 import sys
 import time
+import math
 
 import pygame as pg
 
@@ -88,6 +89,21 @@ class Bird:
             self._img = self._imgs[tuple(sum_mv)] #押されたキーの合計値
         screen.blit(self._img, self._rct)
 
+    
+    def get_direction(self):
+        """
+        こうかとんが向いている方向を表す
+        タプルを返すメソッド
+        """
+        key_lst = pg.key.get_pressed()
+        kk_dir = [0,0]
+        for k, img in __class__._delta.items():
+            if key_lst[k]:
+                kk_dir[0] += img[0]
+                kk_dir[1] += img[1]
+        return tuple(kk_dir) 
+            
+
 
 class Bomb:
     """
@@ -129,11 +145,16 @@ class Beam:
     ビームに関するクラス
     """
     def __init__(self, bird: Bird):
-        self._img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/beam.png"),0,2.0)  #画像Surface
+        birddir = bird.get_direction()
+        beam_dirx = birddir[0]
+        beam_diry = birddir[1]
+        beam_dirtan = math.atan2(-(beam_diry),beam_dirx)
+        beam_dirs = math.degrees(beam_dirtan)
+        self._img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/beam.png"),beam_dirs,2.0)  #画像Surface右
         self._rct = self._img.get_rect() #画像Surfaceに対応したrect
         self._rct.centerx = bird._rct.centerx+ bird._rct.width
         self._rct.centery = bird._rct.centery
-        self._vx, self._vy = +1, 0
+        self._vx, self._vy = beam_dirx, beam_diry
 
     def update(self, screen: pg.Surface):
         """
@@ -192,7 +213,7 @@ def main():
         if beam is not None:
             beam.update(screen)
         pg.display.update()
-        clock.tick(500)
+        clock.tick(200)
 
 
 if __name__ == "__main__":
