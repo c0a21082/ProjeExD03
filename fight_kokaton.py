@@ -123,7 +123,7 @@ class Bomb:
         pg.draw.circle(self._img, color, (rad, rad), rad)
         self._img.set_colorkey((0, 0, 0))
         self._rct = self._img.get_rect()
-        self._rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)
+        self._rct.center = random.randint(50, WIDTH-50), random.randint(50, HEIGHT-50)
         self._vx, self._vy = random.choice(Bomb._dires), random.choice(Bomb._dires)
 
     def update(self, screen: pg.Surface):
@@ -152,8 +152,8 @@ class Beam:
         beam_dirs = math.degrees(beam_dirtan)
         self._img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/beam.png"),beam_dirs,2.0)  #画像Surface右
         self._rct = self._img.get_rect() #画像Surfaceに対応したrect
-        self._rct.centerx = bird._rct.centerx+ (beam_dirx*50)
-        self._rct.centery = bird._rct.centery
+        self._rct.centerx = bird._rct.centerx + (beam_dirx*100)
+        self._rct.centery = bird._rct.centery + (beam_diry*100)
         self._vx, self._vy = beam_dirx, beam_diry
 
     def update(self, screen: pg.Surface):
