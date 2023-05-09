@@ -152,7 +152,7 @@ class Beam:
         beam_dirs = math.degrees(beam_dirtan)
         self._img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/beam.png"),beam_dirs,2.0)  #画像Surface右
         self._rct = self._img.get_rect() #画像Surfaceに対応したrect
-        self._rct.centerx = bird._rct.centerx+ bird._rct.width
+        self._rct.centerx = bird._rct.centerx+ (beam_dirx*50)
         self._rct.centery = bird._rct.centery
         self._vx, self._vy = beam_dirx, beam_diry
 
