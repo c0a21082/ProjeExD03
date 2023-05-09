@@ -42,14 +42,19 @@ class Bird:
         引数1 num：こうかとん画像ファイル名の番号
         引数2 xy：こうかとん画像の位置座標タプル
         """
-        self._img = pg.transform.flip(  # 左右反転
-            pg.transform.rotozoom(  # 2倍に拡大
-                pg.image.load(f"ex03/fig/{num}.png"), 
-                0, 
-                2.0), 
-            True, 
-            False
-        )
+        img0 = pg.transform.rotozoom(pg.image.load(f"ex03/fig/{num}.png"), 0, 2.0)  # 左向き，2倍
+        img1 = pg.transform.flip(img0, True, False)  # 右向き，2倍
+        self._imgs = {
+            (1,0) : img1, #right
+            (1,-1):pg.transform.rotozoom(img1,45,1.0),#rightup
+            (0,-1):pg.transform.rotozoom(img1,90,1.0),#up
+            (-1,-1):pg.transform.rotozoom(img0,-45,1.0),#leftup
+            (-1,0):pg.transform.rotozoom(img0,0,1.0),#left
+            (-1,+1):pg.transform.rotozoom(img0,45,1.0),#leftdown
+            (0,+1):pg.transform.rotozoom(img0,90,1.0),#down
+            (1,+1):pg.transform.rotozoom(img1,-45,1.0),#rightdown
+        }
+        self._img = self._imgs[(+1, 0)]   # デフォルトで右      
         self._rct = self._img.get_rect()
         self._rct.center = xy
 
@@ -62,19 +67,25 @@ class Bird:
         self._img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/{num}.png"), 0, 2.0)
         screen.blit(self._img, self._rct)
 
+
     def update(self, key_lst: list[bool], screen: pg.Surface):
         """
         押下キーに応じてこうかとんを移動させる
         引数1 key_lst：押下キーの真理値リスト
         引数2 screen：画面Surface
         """
+        sum_mv = [0,0]
         for k, mv in __class__._delta.items():
             if key_lst[k]:
                 self._rct.move_ip(mv)
+                sum_mv[0] += mv[0]#縦合計
+                sum_mv[1] += mv[1]#横合計
         if check_bound(screen.get_rect(), self._rct) != (True, True):
             for k, mv in __class__._delta.items():
                 if key_lst[k]:
                     self._rct.move_ip(-mv[0], -mv[1])
+        if not (sum_mv[0]== 0 and sum_mv[1] == 0):
+            self._img = self._imgs[tuple(sum_mv)] #押されたキーの合計値
         screen.blit(self._img, self._rct)
 
 
